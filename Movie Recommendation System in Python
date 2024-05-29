@@ -1,0 +1,37 @@
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Sample movie ratings data
+data = {
+    'user': ['Alice', 'Bob', 'Alice', 'Bob', 'Alice', 'Bob'],
+    'movie': ['Inception', 'Inception', 'Titanic', 'Titanic', 'Avatar', 'Avatar'],
+    'rating': [5, 4, 4, 5, 5, 4]
+}
+
+df = pd.DataFrame(data)
+
+# Create a pivot table
+pivot_table = df.pivot_table(index='user', columns='movie', values='rating')
+
+# Calculate cosine similarity
+similarity = cosine_similarity(pivot_table.fillna(0))
+
+# Create a DataFrame for similarity
+similarity_df = pd.DataFrame(similarity, index=pivot_table.index, columns=pivot_table.index)
+
+def recommend_movies(user, n=1):
+    similar_users = similarity_df[user].sort_values(ascending=False).index[1:]
+    recommendations = {}
+    for similar_user in similar_users:
+        similar_user_ratings = pivot_table.loc[similar_user].dropna()
+        for movie, rating in similar_user_ratings.items():
+            if movie not in pivot_table.loc[user].dropna().index:
+                if movie not in recommendations:
+                    recommendations[movie] = rating
+                else:
+                    recommendations[movie] += rating
+        if len(recommendations) >= n:
+            break
+    return sorted(recommendations.items(), key=lambda x: x[1], reverse=True)[:n]
+
+print(recommend_movies('Alice', 2))
