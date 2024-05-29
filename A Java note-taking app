@@ -1,0 +1,55 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Note {
+    private String content;
+
+    public Note(String content) {
+        this.content = content;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return content;
+    }
+}
+
+public class NoteApp {
+    private static ArrayList<Note> notes = new ArrayList<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("1. Add note");
+            System.out.println("2. View notes");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            if (choice == 1) {
+                System.out.print("Enter note content: ");
+                String content = scanner.nextLine();
+                notes.add(new Note(content));
+            } else if (choice == 2) {
+                System.out.println("Notes:");
+                for (Note note : notes) {
+                    System.out.println(note);
+                }
+            } else if (choice == 3) {
+                break;
+            } else {
+                System.out.println("Invalid option");
+            }
+        }
+        scanner.close();
+    }
+}
